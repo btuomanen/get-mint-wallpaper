@@ -5,7 +5,7 @@
 # This is to facilitate the easy download of Linux mint backgrounds for Windows 10 users.
 # (Mint has pretty good backgrounds, if you didn't know)
 
-# This assumes you have WSL installed.  Usage:
+# This assumes you have WSL with Linux PowerShell installed.  Usage:
 
 # source get-mind-wallpaper.sh
 
@@ -17,22 +17,20 @@
 
 # BTW this assumes that your WSL username is the same as your Windows username!!!
 
+pushd=`pwd`
+
 if [ ! -d "${HOME}/backgrounds" ]; then
     mkdir "${HOME}/backgrounds"
 fi
 
-cd "${HOME}/backgrounds"
 
 
 # get a few other backgrounds from the net
 # as desired here...
 
-# figure out some way to automate downloading these background deb files from here:
-# http://packages.linuxmint.com/pool/main/m/
+# use Powershell script to download deb files.
 
-wget -c "http://packages.linuxmint.com/pool/main/m/mint-backgrounds-nadia/mint-backgrounds-nadia_1.4_all.deb"
-wget -c "http://packages.linuxmint.com/pool/main/m/mint-backgrounds-maya-extra/mint-backgrounds-maya-extra_1.1_all.deb"
-wget -c "http://packages.linuxmint.com/pool/main/m/mint-backgrounds-nadia-extra/mint-backgrounds-nadia-extra_1.0_all.deb"
+pwsh "./retrieve-deb-files.ps1"
 
 if [ -d "${HOME}/temp0" ]; then
     rm -rf "${HOME}/temp0"
@@ -71,7 +69,8 @@ for fn in "${HOME}/backgrounds/"* ; do
             export index1=0
 
             for img in "./usr/share/backgrounds/"* ; do 
-                mv "${img}" "${HOME}/mint-backgrounds/${index0}-${index1}"
+                cp -rf "${img}" "${HOME}/mint-backgrounds/"
+                rm -rf "${img}"
                 export index1=`expr $index1 + 1`
             done
 
@@ -84,17 +83,38 @@ for fn in "${HOME}/backgrounds/"* ; do
     done
 
 cd $HOME
-source ./cleanup.sh
 
 
-export realdir="/mnt/c/Users/brtuoman/mint-backgrounds/" 
+export realdir="/mnt/c/Users/${USER}/mint-backgrounds/" 
 
-if [ ! -d $realdir ]; then
-    mkdir $realdir
+if [ -d $realdir ]; then
+    rm -rf $realdir
 fi
 
+mkdir $realdir
+
 cd "${HOME}/mint-backgrounds"
-cp -r * "${realdir}"
+
+# iterate through all of the directories, moving jpgs to windows dir.
+for dir in * ; do
+    if [ -d $dir ]; then
+
+        # should use some regex here to only send over jpg and png..
+        for fn in "${dir}/"* ; do
+
+                cp -rf $fn $realdir
+                rm -rf $fn
+        done
+        #mv "${dir}/"*.jpg $realdir
+    fi
+done
+#* "${realdir}"
+
+#" source ./cleanup.sh
+
+rm -rf "${HOME}/mint-backgrounds"
+rm -rf "${HOME}/temp0"
 
 echo "done extracting backgrounds."
 explorer.exe "C:\\Users\\${USER}\\mint-backgrounds"
+cd $pushd

@@ -1,14 +1,12 @@
-cd $HOME
+rm -rf "${HOME}/temp0"
 
-rm -rf temp0
+rm -rf "${HOME}/mint-backgrounds"
 
-cd "${HOME}/backgrounds"
-
-for fn in *
-    do
-        if [ ! ${fn: -3} == "deb" ]; 
-            then rm $fn
+if [ -e "${HOME}/backgrounds" ] && [ -d "${HOME}/backgrounds"] ; then
+for fn in ${HOME}/backgrounds/* ; do
+        if [ ! ${fn: -3} == "deb" ] ; then 
+            rm -rf $fn
         fi
     done
+fi
 
-cd $HOME
