@@ -1,2 +1,2 @@
 # get-mint-wallpaper
-Some Bash scripts to retrieve Linux Mint wallpaper from deb archieves.
+Some simple Bash scripts to retrieve Linux Mint wallpaper from deb files in repo.
